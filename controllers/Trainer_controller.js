@@ -1,5 +1,6 @@
-import joi from "joi";
-import { Trainer } from "../models/trainer.js";
+const joi = require("joi");
+const  {Trainer}  = require("../models/trainer.js");
+
 
 function validate_Trainer(trainer) {
   const schema = joi.object({
@@ -12,7 +13,7 @@ function validate_Trainer(trainer) {
   return schema.validate(trainer);
 }
 
-////////////////////////////////////
+
 const getAllTrainer = (req, res) => {
   res.send(Trainer);
 };
@@ -73,7 +74,7 @@ const deleteTrainer = (req, res) => {
   res.send(Trainer);
 };
 
-export {
+module.exports = {
   addTrainer,
   deleteTrainer,
   editTrainerById,
