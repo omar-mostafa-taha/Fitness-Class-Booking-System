@@ -14,64 +14,71 @@ function validate_Trainer(trainer) {
 }
 
 
-const getAllTrainer = (req, res) => {
-  res.send(Trainer);
+const getAllTrainer = async (req, res) => {
+  try {
+    const alltrainers = await Trainer.find({});
+    res.status(200).send(alltrainers);
+  } catch (error) {
+    res.status(400).send(error);
+  }
 };
 
 ////////////////////////////////////////////
 
-const getTrainerById = (req, res) => {
-  const trainer = Trainer.find((c) => c.id === parseInt(req.params.id));
-  if (!trainer) {
-    res.status(404).send("the trainer with the given id not found");
-  } else {
-    res.send(trainer);
-  }
+const getTrainerById = async (req, res) => {
+    try {
+      const trainerById = await Trainer.findOne({ _id: req.params.id });
+      res.status(200).send(trainerById);
+    
+    } catch (error) {
+      res.status(400).send(error);
+    }
 };
 
 /////////////////////////////////////////////////////
-const addTrainer = (req, res) => {
-  const result = validate_Trainer(req.body);
-  if (result.error) {
-    res.sendStatus(400).json({ msg: result.error.details[0].message });
-    return;
+const addTrainer = async (req, res) => {
+  try {
+    const trainer = await Trainer.create(req.body);
+    res.status(200).send(trainer);
+
+  } catch (error) {
+    res.status(400).send(error);
   }
-  const trainer = {
-    id: Trainer[Trainer.length - 1].id + 1,
-    name: req.body.name,
-    email: req.body.email,
-  };
-  Trainer.push(trainer);
-  res.send(trainer);
 };
 
 //////////////////////////////////////////////////////////////////
 
-const editTrainerById = (req, res) => {
-  const trainer = Trainer.find((c) => c.id === parseInt(req.params.id));
-  if (!trainer) res.status(404).send("the trainer with the given id not found");
-  const result = validate_Student(req.body);
-  if (result.error) {
-    res.sendStatus(400).send(result.error.details[0].message);
-    return;
-  }
-  if (req.body.name) {
-    trainer.name = req.body.name;
-  }
-  if (req.body.email) {
-    trainer.email = req.body.email;
-  }
-  res.send(Trainer);
+const editTrainerById = async (req, res) => {
+  try {
+    const trainer = await Trainer.findOne({ _id: req.params.id });
+    if(!trainer) {
+      return res.status(404).send("Trainer not found");
+    }
+    if (req.body.name != null) {
+        trainer.name = req.body.name; 
+    }
+    if (req.body.email!= null) {
+        trainer.email = req.body.email;
+    }
+
+    await trainer.save();
+    res.status(200).send(trainer);
+  
+  } catch (error) {
+    res.status(400).send(error);
+  };
 };
 /////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////
-const deleteTrainer = (req, res) => {
-  const trainer = Trainer.find((c) => c.id === parseInt(req.params.id));
-  if (!trainer) res.status(404).send("the trainer with the given id not found");
-  const index = Trainer.indexOf(trainer);
-  Trainer.splice(index, 1);
-  res.send(Trainer);
+const deleteTrainer = async (req, res) => {
+  try {
+    const trainer = await Trainer.deleteOne({ _id: req.params.id });
+    res.status(200).send(trainer);
+  
+  } catch (error) {
+    res.status(400).send(error);
+  }
 };
 
 module.exports = {
