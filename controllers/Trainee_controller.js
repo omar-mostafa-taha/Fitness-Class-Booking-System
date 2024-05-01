@@ -1,82 +1,74 @@
-import joi from "joi";
-import { trainee } from "../models/trainee.js";
+import { Trainee } from "../models/trainee.js";
 
-function validate_Trainee(trainee) {
-    const schema = joi.object({
-        name: joi.string().min(3).required(),
-        email: joi
-            .string()
-            .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
-            .required(),
-    });
-    return schema.validate(trainee);
-}
-
-////////////////////////////////////
-const getAllTrainees = (req, res) => {
-    res.send(Trainee);
-};
-
-////////////////////////////////////////////
-
-const geTraineeById = (req, res) => {
-    const trainee = Trainee.find((c) => c.id === parseInt(req.params.id));
-    if (!trainee) {
-        res.status(404).send("the trainee with the given id not found");
-    } else {
-        res.send(trainee);
+// Get all trainees in the database 
+const getAllTrainees = async (req, res) => {
+    try {
+        const allTrainees = await Trainee.find({});
+        res.status(200).send(allTrainees);
+    } catch (error) {
+        res.status(400).send(error);
     }
 };
 
-/////////////////////////////////////////////////////
-const addTrainee = (req, res) => {
-    const result = validate_Trainee(req.body);
-    if (result.error) {
-        res.sendStatus(400).json({ msg: result.error.details[0].message });
-        return;
+// Get one trainee
+const getTraineeById = async (req, res) => {
+    try {
+        const trainee = await Trainee.findOne({ _id: req.params.id });
+        res.status(200).send(trainee);
+
+    } catch (error) {
+        res.status(400).send(error);
     }
-    const trainee = {
-        id: Trainee[Trainee.length - 1].id + 1,
-        name: req.body.name,
-        email: req.body.email,
+};
+
+// Add Trainee to the database
+const addTrainee = async (req, res) => {
+    try {
+        const trainee = await Trainee.create(req.body);
+        res.status(200).send(trainee);
+
+    } catch (error) {
+        res.status(400).send(error);
+    }
+};
+
+// Edit Trainee by it's id
+const editTraineeById = async (req, res) => {
+    try {
+        const trainee = await Trainee.findOne({ _id: req.params.id });
+        if (!trainee) {
+            return res.status(404).send("This Trainee doesn't exist");
+        }
+        if (req.body.name != null) {
+            trainee.name = req.body.name;
+        }
+        if (req.body.email != null) {
+            trainee.email = req.body.email;
+        }
+
+        await trainee.save();
+        res.status(200).send(trainee);
+
+    } catch (error) {
+        res.status(400).send(error);
     };
-    Trainee.push(trainee);
-    res.send(Trainee);
 };
 
-//////////////////////////////////////////////////////////////////
+// Delete  a trainee by its id
+const deleteTrainee = async (req, res) => {
+    try {
+        const trainee = await Trainee.deleteOne({ _id: req.params.id });
+        res.status(200).send(trainee);
 
-const editTraineeById = (req, res) => {
-    const trainee = Trainee.find((c) => c.id === parseInt(req.params.id));
-    if (!trainee) res.status(404).send("the trainee with the given id not found");
-    const result = validate_Trainee(req.body);
-    if (result.error) {
-        res.sendStatus(400).send(result.error.details[0].message);
-        return;
+    } catch (error) {
+        res.status(400).send(error);
     }
-    if (req.body.name) {
-        trainee.name = req.body.name;
-    }
-    if (req.body.email) {
-        trainee.email = req.body.email;
-    }
-    res.send(Trainee);
-};
-/////////////////////////////////////////////////////////////
-
-//////////////////////////////////////////////////////
-const deleteTrainee = (req, res) => {
-    const trainee = Trainee.find((c) => c.id === parseInt(req.params.id));
-    if (!trainee) res.status(404).send("the trainee with the given id not found");
-    const index = Trainee.indexOf(trainee);
-    Trainee.splice(index, 1);
-    res.send(Trainee);
 };
 
-export {
+module.exports = {
     addTrainee,
     deleteTrainee,
     editTraineeById,
     getAllTrainees,
-    geTraineeById,
+    getTraineeById,
 };
