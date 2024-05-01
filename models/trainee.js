@@ -1,5 +1,18 @@
-export const Trainee = [
-    { id: 1, name: "Name1", email: 'name1@gmail.com' },
-    { id: 2, name: "Name2", email: 'name2@gmail.com' },
-    { id: 3, name: "Name3", email: 'name3@gmail.com' },
-];
+const mongoose = require("mongoose");
+const traineeSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+    },
+
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+        match: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/
+    },
+});
+
+const Trainee = mongoose.model('trainees', traineeSchema)
+
+module.exports = { Trainee, };
