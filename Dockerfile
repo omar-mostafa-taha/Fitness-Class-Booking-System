@@ -1,6 +1,6 @@
-FROM node:latest
+FROM node:alpine
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
 
 COPY package*.json ./
@@ -10,5 +10,5 @@ RUN npm install
 
 EXPOSE 3000
 
-CMD ["node", "dev"]
+CMD ["node", "index.js"]
 
