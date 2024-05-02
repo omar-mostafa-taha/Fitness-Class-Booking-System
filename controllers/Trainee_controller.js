@@ -1,4 +1,4 @@
-import { Trainee } from "../models/trainee.js";
+const { Trainee } = require("../models/trainee.js");
 
 // Get all trainees in the database 
 const getAllTrainees = async (req, res) => {

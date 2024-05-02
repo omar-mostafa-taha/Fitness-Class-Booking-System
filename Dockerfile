@@ -1,14 +1,7 @@
-FROM node:latest
-
-WORKDIR /usr/src/app
-
-
+FROM node:alpine
+WORKDIR /app
 COPY package*.json ./
 COPY . .
-
 RUN npm install
-
 EXPOSE 3000
-
-CMD ["node", "dev"]
-
+CMD ["node", "index.js"]
